@@ -1,29 +1,41 @@
 import 'package:eco_track/ecotrack_db.dart';
 import 'package:eco_track/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import 'notification_service.dart';
 
-class Report extends StatefulWidget {
-  const Report({required this.userId, super.key});
+class EcoFriendlyActivity extends StatefulWidget {
+  const EcoFriendlyActivity({required this.userId, super.key});
 
   final int userId;
 
   @override
-  State<Report> createState() => _ReportState();
+  State<EcoFriendlyActivity> createState() => _EcoState();
 }
 
-class _ReportState extends State<Report> {
+class _EcoState extends State<EcoFriendlyActivity> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  String? _selectedCategory;
+  final TextEditingController _participantsController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
 
-  final List<String> _categories = ['Air', 'Land', 'Water', 'Noise'];
-
-  void _submitReport() async {
+    if (picked != null) {
+      setState(() {
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+  void _initActivity() async {
     final conn = DatabaseConnection().connection;
 
     // Check database connection
@@ -42,58 +54,36 @@ class _ReportState extends State<Report> {
       final location = _locationController.text;
       final title = _titleController.text;
       final description = _descriptionController.text;
-      final category = _selectedCategory;
+      final participants = int.tryParse(_participantsController.text);
+      final date = _dateController.text;
+
 
       try {
         // Insert into environmental issues table
         await conn.execute(
-          'INSERT INTO enviromental_issues (status, location, reporter_id, title, description, category) VALUES (:status, :location, :reporter_id, :title, :description, :category)',
+          'INSERT INTO `eco_friendly_activities` (location, organizer_id, title, description, `participants_count`, date) VALUES (:location, :organizer_id, :title, :description, :participants_count, :date)',
           {
-            "status": 0,
             "location": location,
-            "reporter_id": widget.userId,
+            "organizer_id": widget.userId,
             "title": title,
             "description": description,
-            "category": category,
+            "participants_count": participants,
+            "date": date
           },
         );
 
-        await conn.execute('UPDATE user SET points = points + 50 where id = :user_id',
-        {
-          "user_id": widget.userId,
-        }
-        );
-
-        // Insert into notifications table
-        final notificationMessage =
-            'Your report "$title" has been submitted successfully.';
-        String timestamp = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-        await conn.execute(
-          'INSERT INTO notification (user_id, message, time_stamp, title, description) VALUES (:user_id, :message, :time_stamp, :title, :description)',
-          {
-            "user_id": widget.userId,
-            "message": notificationMessage,
-            "time_stamp": timestamp,
-            "title": title,
-            "description": description,
-          },
-        );
-
-
-        // Show notification
-        final notificationService = NotificationService();
-        await notificationService.showNotification(
-          title,
-          notificationMessage,
+        await conn.execute('UPDATE user SET points = points + 30 where id = :user_id',
+            {
+              "user_id": widget.userId,
+            }
         );
 
         // Show confirmation snack bar
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Report submitted successfully!')),
+          const SnackBar(content: Text('Activity intitated!')),
         );
       } catch (e) {
-        print('Error while submitting the report or adding notification: $e');
+        print('Error while initiating activity: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
@@ -113,10 +103,10 @@ class _ReportState extends State<Report> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Report an Issue",
+          "Initiate an activity",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Utils.c3,
+        backgroundColor: Utils.primaryBlueAdmin,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
@@ -127,7 +117,7 @@ class _ReportState extends State<Report> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Report Details",
+                "Activity details",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16.0),
@@ -181,44 +171,53 @@ class _ReportState extends State<Report> {
               ),
               const SizedBox(height: 16.0),
 
-              // Category Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                items: _categories
-                    .map((category) => DropdownMenuItem(
-                        value: category, child: Text(category)))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
+              // Participants count
+              TextFormField(
+                controller: _participantsController,
                 decoration: const InputDecoration(
-                  labelText: 'Category',
+                  labelText: 'Participants required',
                   border: OutlineInputBorder(),
                 ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
-                  if (value == null) {
-                    return 'Please select a category';
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an amount';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16.0),
 
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: _dateController,
+                readOnly: true, // Prevents manual editing
+                decoration: const InputDecoration(
+                  labelText: 'Select a date',
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () => _selectDate(context),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a date';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 24.0),
 
               // Submit Button
               Center(
                 child: ElevatedButton(
-                  onPressed: _submitReport,
+                  onPressed: _initActivity,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Utils.c3,
+                    backgroundColor: Utils.primaryBlueAdmin,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32.0, vertical: 12.0),
                   ),
                   child: const Text(
-                    'Submit Report',
+                    'Initiate Activity',
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),

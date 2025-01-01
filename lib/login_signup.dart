@@ -1,3 +1,4 @@
+import 'package:eco_track/admin_pages/admin_dashboard.dart';
 import 'package:eco_track/pages/user_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,11 +13,11 @@ class LoginSignup extends StatefulWidget {
   State<LoginSignup> createState() => _LoginSignupState();
 }
 
-class _LoginSignupState extends State<LoginSignup>
-{
+class _LoginSignupState extends State<LoginSignup> {
   // Controllers for login
   late final TextEditingController emailController;
   late final TextEditingController passController;
+
   // Controllers for sign in
   late final TextEditingController nameControllerSign;
   late final TextEditingController addressControllerSign;
@@ -66,9 +67,14 @@ class _LoginSignupState extends State<LoginSignup>
       print("Not connected");
       return null;
     } else {
+      int role = isUserSelected ? 0 : 1;
       var result = await conn.execute(
-        'SELECT id FROM user WHERE email = :email AND password = :password',
-        {"email": email, "password": password},
+        'SELECT id FROM user WHERE email = :email AND password = :password AND role = :role',
+        {
+          "email": email,
+          "password": password,
+          "role": role
+        },
       );
       print(result.toString());
       if (result.rows.isNotEmpty) {
@@ -84,12 +90,20 @@ class _LoginSignupState extends State<LoginSignup>
     String email = emailController.text.trim();
     String password = passController.text.trim();
     int? userId = await validateLogin(email, password);
-    if (userId != null) {
+    if (userId != null && isUserSelected)  {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => UserPages(userId: userId)),
       );
-    } else {
+    }
+    else if (userId != null && !isUserSelected)
+      {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminDashboard(userId: userId)),
+        );
+      }
+    else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Invalid credentials")));
     }
@@ -211,21 +225,26 @@ class _LoginSignupState extends State<LoginSignup>
   Expanded LoginButton(BuildContext context) {
     return Expanded(
       child: Container(
-        height: MediaQuery.of(context).size.height*0.07,
-        width: MediaQuery.of(context).size.width*0.95,
-        child: ElevatedButton(onPressed: login,
-          child:Text("Login",style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: "Arial"
-
-          ),),
-          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue),),
+        height: MediaQuery.of(context).size.height * 0.07,
+        width: MediaQuery.of(context).size.width * 0.95,
+        child: ElevatedButton(
+          onPressed: login,
+          child: Text(
+            "Login",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Arial"),
+          ),
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.blue),
+          ),
         ),
       ),
     );
   }
+
   Widget _buildSlider(BuildContext context) {
     return Column(
       children: [
@@ -350,7 +369,8 @@ class _LoginSignupState extends State<LoginSignup>
           signInInputField("Full Name", Icons.person, nameControllerSign),
           signInInputField("Email", Icons.email, emailControllerSign),
           signInInputField("Password", Icons.lock, passControllerSign),
-          signInInputField("Complete address", Icons.house, addressControllerSign),
+          signInInputField(
+              "City", Icons.house, addressControllerSign),
           const SizedBox(height: 20),
           Container(
             height: 50,
@@ -367,29 +387,34 @@ class _LoginSignupState extends State<LoginSignup>
               ],
             ),
             child: Center(
-              child:
-              InkWell(
+              child: InkWell(
                 onTap: () async {
                   String name = nameControllerSign.text.trim();
                   String email = emailControllerSign.text.trim();
                   String password = passControllerSign.text.trim();
                   String address = addressControllerSign.text.trim();
 
-                  if (name.isEmpty || email.isEmpty || password.isEmpty || address.isEmpty) {
+                  if (name.isEmpty ||
+                      email.isEmpty ||
+                      password.isEmpty ||
+                      address.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please fill in all fields")),
+                      const SnackBar(
+                          content: Text("Please fill in all fields")),
                     );
                     return;
                   }
 
-                  bool success = await insertNewUser(email, password, name, address);
+                  bool success =
+                      await insertNewUser(email, password, name, address);
                   if (success) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Registration successful!")),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Registration failed. Try again.")),
+                      const SnackBar(
+                          content: Text("Registration failed. Try again.")),
                     );
                   }
                 },
@@ -401,7 +426,6 @@ class _LoginSignupState extends State<LoginSignup>
                   ),
                 ),
               ),
-
             ),
           ),
           SizedBox(height: 20),
@@ -424,9 +448,8 @@ class _LoginSignupState extends State<LoginSignup>
     );
   }
 
-  Container signInInputField(String hintText, IconData inputIcon,
-      TextEditingController controller
-      ) {
+  Container signInInputField(
+      String hintText, IconData inputIcon, TextEditingController controller) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(

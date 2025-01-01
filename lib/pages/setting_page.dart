@@ -176,7 +176,7 @@ class Settings extends StatelessWidget {
   }
 
   void _logOut(BuildContext context) {
-    // Handle logout logic
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -188,15 +188,19 @@ class Settings extends StatelessWidget {
               onPressed: ()
               {
                 // Perform logout
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                // Navigate to login page after logout
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginSignup()));
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginSignup(),
+                  ),
+                      (route) => false, // Ensure all previous routes are removed
+                );
               },
               child: const Text('Log Out'),
             ),
