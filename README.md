@@ -15,3 +15,12 @@ Authority Dashboard:
 
 ![1](https://github.com/user-attachments/assets/80c36087-5ad8-463e-b077-a6ab80948560)
 ![2](https://github.com/user-attachments/assets/0b2b0b2f-00ea-4f1c-9354-da7fd20996f7)
+![3](https://github.com/user-attachments/assets/de94691a-482e-4835-ad02-504fd95db3cf)
+![4](https://github.com/user-attachments/assets/ecd2bfc2-c2ed-4385-9bb1-badabc210df3)
+
+User Dashboard:
+![WhatsApp Image 2025-02-26 at 9 41 31 AM](https://github.com/user-attachments/assets/299f79c3-89b0-49e3-8b68-b7c2e7171fea)![1](https://github.com/user-attachments/assets/ddd13112-aabd-49e8-9624-d9ad85de910c)
+![3](https://github.com/user-attachments/assets/6337b584-b360-4cfd-972d-b90975f801e4)![4](https://github.com/user-attachments/assets/f9a76dcf-3d65-48ce-8514-82e69d86ebc7)
+![6](https://github.com/user-attachments/assets/3cfb68c2-e7ab-4cd4-aaf0-8bf8ef881c8d)
+![5](https://github.com/user-attachments/assets/c8bfd62d-be74-455a-908f-7b9a448c1baa)
+
