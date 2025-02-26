@@ -44,7 +44,7 @@ Communities face challenges in **monitoring and improving environmental quality*
 The authority dashboard provides **admin controls** and a **bird’s-eye view** of community-reported issues.  
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/80c36087-5ad8-463e-b077-a6ab80948560" width="45%" />
+  <img src="https://github.com/user-attachments/assets/80c36087-5ad8-463e-b077-a6ab80948560" width="45%" height = "20%" />
   <img src="https://github.com/user-attachments/assets/0b2b0b2f-00ea-4f1c-9354-da7fd20996f7" width="45%" />
 </p>
 
