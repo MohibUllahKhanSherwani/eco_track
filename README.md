@@ -75,10 +75,10 @@ The user dashboard allows individuals to **report issues, track progress, and en
 
 ---
 
-## 📢 Want to Contribute?  
-We welcome contributions to improve **Eco-Track**! Feel free to:  
-📌 **Fork the repository**  
-📌 **Submit issues or feature requests**  
-📌 **Make a pull request**  
+## 📬 Contact Us  
 
-🌟 **Star this repository**  
+For any inquiries, feel free to reach out:  
+
+[![General Inquiries](https://img.shields.io/badge/General%20Inquiries-support%40ecotrack.com-blue?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mohibkhansherwani@gmail.com)  
+[![Technical Support](https://img.shields.io/badge/Technical%20Support-tech%40ecotrack.com-green?style=for-the-badge&logo=gmail&logoColor=white)](mailto:abuzarbabar5@gmail.com)   
+
