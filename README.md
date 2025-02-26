@@ -73,11 +73,7 @@ The user dashboard allows individuals to **report issues, track progress, and en
   <img src="https://github.com/user-attachments/assets/c8bfd62d-be74-455a-908f-7b9a448c1baa" width="250" height="450" style="margin: 10px;" />
 </p>
 
----
-
-## 📬 Contact Us  
-
-For any inquiries, feel free to reach out:  
+--- 
 
 ## 📬 Contact Us  
 
