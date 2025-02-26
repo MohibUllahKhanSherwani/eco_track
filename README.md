@@ -79,6 +79,11 @@ The user dashboard allows individuals to **report issues, track progress, and en
 
 For any inquiries, feel free to reach out:  
 
-[![mohibkhansherwani@gmail.com](https://img.shields.io/badge/General%20Inquiries-support%40ecotrack.com-blue?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mohibkhansherwani@gmail.com)  
-[![abuzarbabar5@gmail.com](https://img.shields.io/badge/Technical%20Support-tech%40ecotrack.com-green?style=for-the-badge&logo=gmail&logoColor=white)](mailto:abuzarbabar5@gmail.com)   
+## 📬 Contact Us  
+
+For any inquiries, feel free to reach out:  
+
+[![Email](https://img.shields.io/badge/mohibkhansherwani%40gmail.com-blue?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mohibkhansherwani@gmail.com)  
+[![Email](https://img.shields.io/badge/abuzarbabar5%40gmail.com-green?style=for-the-badge&logo=gmail&logoColor=white)](mailto:abuzarbabar5@gmail.com)  
+  
 
