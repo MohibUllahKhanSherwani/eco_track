@@ -14,3 +14,4 @@ Data Insights: Dashboards showing trends like most reported issues , task comple
 Authority Dashboard:
 
 ![1](https://github.com/user-attachments/assets/80c36087-5ad8-463e-b077-a6ab80948560)
+![2](https://github.com/user-attachments/assets/0b2b0b2f-00ea-4f1c-9354-da7fd20996f7)
