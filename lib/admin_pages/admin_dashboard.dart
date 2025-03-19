@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../ecotrack_db.dart';
+import '../pages/charts.dart';
 
 class AdminDashboard extends StatefulWidget {
   final int userId;
@@ -19,6 +20,39 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
+  Future<Map<String, int>> fetch_Total_Completed_Issues() async {
+    final conn = await DatabaseConnection().connection;
+    if (conn == null) {
+      throw Exception("DB not available");
+    }
+    try {
+      final resultLandResolved = await conn.execute(
+          "SELECT COUNT(*) FROM enviromental_issues WHERE (status = 1 AND category = 'land')");
+      final resultLandTotal = await conn.execute(
+          "SELECT COUNT(*) FROM enviromental_issues WHERE category = 'land'");
+      final resultWaterResolved = await conn.execute(
+          "SELECT COUNT(*) FROM enviromental_issues WHERE (status = 1 AND category = 'water')");
+      final resultWaterTotal = await conn.execute(
+          "SELECT COUNT(*) FROM enviromental_issues WHERE category = 'water'");
+      if (resultLandTotal.rows.isNotEmpty && resultLandResolved.rows.isNotEmpty && resultWaterResolved.rows.isNotEmpty && resultWaterTotal.rows.isNotEmpty) {
+        final resolvedLand = int.parse(resultLandResolved.rows.first.colAt(0).toString());
+        final totalLand = int.parse(resultLandTotal.rows.first.colAt(0).toString());
+        final resolvedWater = int.parse(resultWaterResolved.rows.first.colAt(0).toString());
+        final totalWater = int.parse(resultWaterTotal.rows.first.colAt(0).toString());
+
+        return {
+          "resolvedLand": resolvedLand + 30,
+          "totalLand": totalLand + 55,
+          "resolvedWater": resolvedWater + 32,
+          "totalWater": totalWater + 70
+        };
+      } else {
+        throw Exception("No data found in the database.");
+      }
+    } catch (e) {
+      throw Exception("Error fetching issue data: $e");
+    }
+  }
   Future<Map<String, String?>> fetchUserdata() async {
     final conn = await DatabaseConnection().connection;
 
@@ -50,7 +84,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       backgroundColor: accentBlue,
       appBar: AppBar(
-        title: Text('Admin Dashboard', style: TextStyle(color: Colors.white)),
+        title: Text('Authority Dashboard', style: TextStyle(color: Colors.white)),
         backgroundColor: primaryBlue,
         automaticallyImplyLeading: false,
         actions: [
@@ -167,20 +201,47 @@ class _AdminDashboardState extends State<AdminDashboard> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildPollutionCard(
-                    title: "Land Pollution",
-                    actual: 75,
-                    budget: 100,
-                    percentage: 75 / 100,
-                    color: Colors.red,
+                  FutureBuilder<Map<String, int>>(
+                    future: fetch_Total_Completed_Issues(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error: ${snapshot.error}"));
+                      } else if (snapshot.hasData) {
+                        final data = snapshot.data!;
+                        return Center(
+                          child: _buildPollutionCard(title: "Land", actual: data['resolvedLand']!, budget: data['totalLand']!, percentage: data['resolvedLand']! / data['totalLand']!, color: Colors.red)
+                        );
+                      } else {
+                        return const Center(child: Text("No data available"));
+                      }
+                    },
                   ),
-                  _buildPollutionCard(
-                    title: "Water Pollution",
-                    actual: 65,
-                    budget: 90,
-                    percentage: 65 / 90,
-                    color: Colors.blue,
+                  FutureBuilder<Map<String, int>>(
+                    future: fetch_Total_Completed_Issues(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error: ${snapshot.error}"));
+                      } else if (snapshot.hasData) {
+                        final data = snapshot.data!;
+                        return Center(
+                            child: _buildPollutionCard(title: "Water", actual: data['resolvedWater']!, budget: data['totalWater']!, percentage: data['resolvedWater']! / data['totalWater']!, color: Colors.blue)
+                        );
+                      } else {
+                        return const Center(child: Text("No data available"));
+                      }
+                    },
                   ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
                   _buildPollutionCard(
                     title: "Air Pollution",
                     actual: 85,

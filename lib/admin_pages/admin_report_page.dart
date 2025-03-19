@@ -182,7 +182,7 @@ class _AdminReportPageState extends State<AdminReportPage> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          'Admin Reports',
+          'Authority Reports',
           style: TextStyle(color: Colors.white),
         ),
       ),

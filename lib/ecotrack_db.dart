@@ -13,7 +13,7 @@ class DatabaseConnection {
   Future<void> initializeConnection() async {
     try {
       _connection = await MySQLConnection.createConnection(
-        host: "172.20.56.87",
+        host: "192.168.191.22",
         port: 3306,
         userName: "root",
         password: "mohib123",

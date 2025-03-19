@@ -504,9 +504,10 @@ class MarkerMap extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 child: GoogleMapWithMarker(
                   initialLocation:
-                  LatLng(37.7749, -122.4194), // Example: San Francisco
+                  LatLng(37.7749, -122.4194), onLocationSelected: (String ) {  },
                 ),
               ),
             ),

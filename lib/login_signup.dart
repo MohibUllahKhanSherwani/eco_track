@@ -2,8 +2,6 @@ import 'package:eco_track/admin_pages/admin_dashboard.dart';
 import 'package:eco_track/pages/user_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
 import 'ecotrack_db.dart';
 
 class LoginSignup extends StatefulWidget {

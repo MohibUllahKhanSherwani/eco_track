@@ -4,11 +4,12 @@ import 'package:geocoding/geocoding.dart';
 
 class GoogleMapWithMarker extends StatefulWidget {
   final LatLng initialLocation;
+  final Function(String) onLocationSelected;
 
-  /// Constructor to initialize the map with a specific initial location.
   const GoogleMapWithMarker({
     Key? key,
     required this.initialLocation,
+    required this.onLocationSelected,
   }) : super(key: key);
 
   @override
@@ -16,14 +17,13 @@ class GoogleMapWithMarker extends StatefulWidget {
 }
 
 class _GoogleMapWithMarkerState extends State<GoogleMapWithMarker> {
-  GoogleMapController? _mapController; // Nullable controller
-  late LatLng _currentPosition; // Non-nullable but initialized in initState
+  GoogleMapController? _mapController;
+  late LatLng _currentPosition;
 
   @override
   void initState() {
     super.initState();
-    _currentPosition =
-        widget.initialLocation; // Initialize with the provided initial location
+    _currentPosition = widget.initialLocation;
   }
 
   @override
@@ -41,13 +41,11 @@ class _GoogleMapWithMarkerState extends State<GoogleMapWithMarker> {
             },
             onCameraMove: (CameraPosition position) {
               setState(() {
-                _currentPosition =
-                    position.target; // Update position during movement
+                _currentPosition = position.target;
               });
             },
             onCameraIdle: () {
-              _showAddressFromLatLng(
-                  _currentPosition); // Fetch and show address
+              _showAddressFromLatLng(_currentPosition);
             },
           ),
           Center(
@@ -64,7 +62,6 @@ class _GoogleMapWithMarkerState extends State<GoogleMapWithMarker> {
 
   Future<void> _showAddressFromLatLng(LatLng position) async {
     try {
-      // Fetch placemarks for the given position
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -72,28 +69,19 @@ class _GoogleMapWithMarkerState extends State<GoogleMapWithMarker> {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
+        // String address =
+        //     "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
         String address =
-            "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
-        print(place.locality);
+        "${place.locality}, ${place.street}, ${place.administrativeArea}, ${place.country}";
 
-        // Show the address in a SnackBar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Current Address: $address"),
-          ),
-        );
+
+        widget.onLocationSelected(address);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("No address found for this location."),
-          ),
-        );
+        widget.onLocationSelected("No address found");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: ${e.toString()}"),
-        ),
-      );
+      widget.onLocationSelected("Error: ${e.toString()}");
     }
-  }}
+  }
+}
+

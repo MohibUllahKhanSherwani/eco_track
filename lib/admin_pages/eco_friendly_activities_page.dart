@@ -2,7 +2,10 @@ import 'package:eco_track/ecotrack_db.dart';
 import 'package:eco_track/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+
+import '../map.dart';
 
 
 class EcoFriendlyActivity extends StatefulWidget {
@@ -34,6 +37,11 @@ class _EcoState extends State<EcoFriendlyActivity> {
         _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
+  }
+  void _onLocationSelected(String address) {
+    setState(() {
+      _locationController.text = address;
+    });
   }
   void _initActivity() async {
     final conn = DatabaseConnection().connection;
@@ -128,6 +136,7 @@ class _EcoState extends State<EcoFriendlyActivity> {
                 decoration: const InputDecoration(
                   labelText: 'Location',
                   border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.location_on),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -135,6 +144,19 @@ class _EcoState extends State<EcoFriendlyActivity> {
                   }
                   return null;
                 },
+                onTap: () async {
+                  String address = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GoogleMapWithMarker(
+                        initialLocation: LatLng(34.1688, 73.2215),
+                        onLocationSelected: _onLocationSelected,
+                      ),
+                    ),
+                  );
+                  _locationController.text = address;
+                },
+                readOnly: true,
               ),
               const SizedBox(height: 16.0),
 

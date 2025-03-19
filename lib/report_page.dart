@@ -1,8 +1,10 @@
+
 import 'package:eco_track/ecotrack_db.dart';
 import 'package:eco_track/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-
+import 'map.dart';
 import 'notification_service.dart';
 
 class Report extends StatefulWidget {
@@ -59,9 +61,9 @@ class _ReportState extends State<Report> {
         );
 
         await conn.execute('UPDATE user SET points = points + 50 where id = :user_id',
-        {
-          "user_id": widget.userId,
-        }
+            {
+              "user_id": widget.userId,
+            }
         );
 
         // Insert into notifications table
@@ -79,7 +81,6 @@ class _ReportState extends State<Report> {
             "description": description,
           },
         );
-
 
         // Show notification
         final notificationService = NotificationService();
@@ -105,8 +106,11 @@ class _ReportState extends State<Report> {
     }
   }
 
-
-
+  void _onLocationSelected(String address) {
+    setState(() {
+      _locationController.text = address;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,12 +136,12 @@ class _ReportState extends State<Report> {
               ),
               const SizedBox(height: 16.0),
 
-              // Location Field
               TextFormField(
                 controller: _locationController,
                 decoration: const InputDecoration(
                   labelText: 'Location',
                   border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.location_on),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -145,6 +149,19 @@ class _ReportState extends State<Report> {
                   }
                   return null;
                 },
+                onTap: () async {
+                  String address = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GoogleMapWithMarker(
+                        initialLocation: LatLng(34.1688, 73.2215),
+                        onLocationSelected: _onLocationSelected,
+                      ),
+                    ),
+                  );
+                  _locationController.text = address;
+                },
+                readOnly: true,
               ),
               const SizedBox(height: 16.0),
 
@@ -186,7 +203,7 @@ class _ReportState extends State<Report> {
                 value: _selectedCategory,
                 items: _categories
                     .map((category) => DropdownMenuItem(
-                        value: category, child: Text(category)))
+                    value: category, child: Text(category)))
                     .toList(),
                 onChanged: (value) {
                   setState(() {
@@ -230,3 +247,4 @@ class _ReportState extends State<Report> {
     );
   }
 }
+
